@@ -35,7 +35,7 @@ case class ESSampleLoadGenerator(samples: Int = 100, sampleSize: Long = 1024, us
       .field("id", id)
       .field("name", s"name_is_$id")
       .field("description", s"I am document with id $id.")
-      .field("payload", (1 to sampleSize).map(i => 'o').mkString)
+      .field("payload", (1L to sampleSize).map(i => 'o').mkString)
       .endObject()
       .string()
 
