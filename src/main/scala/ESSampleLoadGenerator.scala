@@ -4,7 +4,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 /**
   * Created by menzelmi on 09/11/16.
   */
-case class ESSampleLoadGenerator(samples: Int = 100, sampleSize: Int = 1024, useHttp: Boolean = false, name: String = null, endpoint: String = null, port: Int = 0) {
+case class ESSampleLoadGenerator(samples: Int = 100, sampleSize: Long = 1024, useHttp: Boolean = false, name: String = null, endpoint: String = null, port: Int = 0) {
 
   private lazy val client =
     if (useHttp) ESClientHTTP(name, endpoint, port)
