@@ -11,7 +11,7 @@ object ESSampleLoadGeneratorApp extends App {
     opt[String]('n', "cluster-name").required().action((value, generator) => generator.copy(name = value))
     opt[String]('e', "cluster-endpoint").required().action((value, generator) => generator.copy(endpoint = value))
     opt[Int]('p', "cluster-port").required().action((value, generator) => generator.copy(port = value))
-    opt[Boolean]('h', "use-http").optional().action((value, generator) => generator.copy(useHttp = value))
+    opt[Unit]('h', "use-http").optional().action((value, generator) => generator.copy(useHttp = true))
   }.parse(args, ESSampleLoadGenerator()) match {
     case Some(generator) =>
       generator.measureLoad
