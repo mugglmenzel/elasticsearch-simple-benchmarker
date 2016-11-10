@@ -25,9 +25,6 @@ case class ESSampleLoadGenerator(samples: Int = 100, useHttp: Boolean = true, na
     println(s"Took ${end - start}ms.")
   }
 
-  measureLoad
-
-
   private def putDocument(id: String, doc: String) = {
     client.putDocument(id, doc)
   }
