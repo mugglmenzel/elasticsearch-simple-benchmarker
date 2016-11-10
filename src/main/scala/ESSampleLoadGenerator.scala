@@ -4,20 +4,13 @@ import org.elasticsearch.common.xcontent.XContentFactory
 /**
   * Created by menzelmi on 09/11/16.
   */
-object ESSampleLoadGenerator extends App {
+case class ESSampleLoadGenerator(samples: Int = 100, useHttp: Boolean = true, name: String = null, endpoint: String = null, port: Int = 0) {
 
-  val NUMBER_SAMPLES = 100
-  val USE_HTTP = true
+  private val client =
+    if (useHttp) ESClientHTTP(name, endpoint, port)
+    else ESClientTCP(name, endpoint, port)
 
-  val CLUSTER_ENDPOINT = "search-elasticsearch-l7nmgytxg3mxykmz7ray2b2bbi.eu-west-1.es.amazonaws.com"
-  val CLUSTER_PORT = 80
-  val CLUSTER_NAME = "elasticsearch"
-
-  val client =
-    if (USE_HTTP) ESClientHTTP(CLUSTER_NAME, CLUSTER_ENDPOINT, CLUSTER_PORT)
-    else ESClientTCP(CLUSTER_NAME, CLUSTER_ENDPOINT, CLUSTER_PORT)
-
-  lazy val generatedSamples = (1 to NUMBER_SAMPLES).map(id => id.toString -> generateSampleDocument(id))
+  private lazy val generatedSamples = (1 to samples).map(id => id.toString -> generateSampleDocument(id))
 
 
   def measureLoad = {
