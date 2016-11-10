@@ -7,7 +7,7 @@ import io.searchbox.client.JestClientFactory
 import io.searchbox.client.config.HttpClientConfig
 import io.searchbox.core.Index
 import org.elasticsearch.client.transport.TransportClient
-import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.common.settings.{ImmutableSettings, Settings}
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 
 /**
@@ -26,12 +26,11 @@ case class ESClientTCP(cluster: String, endpoint: String, port: Int) extends ESC
   private lazy val client = connect
 
   private def connect = {
-    lazy val settings = Settings.settingsBuilder()
+    lazy val settings = ImmutableSettings.settingsBuilder()
       .put("cluster.name", cluster)
       .put("transport.tcp.compress", false)
       .build()
-    TransportClient.builder()
-      .settings(settings).build()
+    new TransportClient(settings)
       .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(endpoint), port))
   }
 
