@@ -14,26 +14,31 @@ object ESSampleLoadGenerator extends App {
   val NUMBER_SAMPLES = 10000
   val USE_HTTP = false
 
-  val CLUSTER_ENDPOINT = "ec2-52-211-134-166.eu-west-1.compute.amazonaws.com"
+  val CLUSTER_ENDPOINT = "ec2-52-18-128-144.eu-west-1.compute.amazonaws.com"
   val CLUSTER_PORT = 9300
   val CLUSTER_NAME = "elasticsearch"
 
 
-  lazy val client = connect
+
   lazy val generatedSamples = (1 to NUMBER_SAMPLES).map(id => id.toString -> generateSampleDocument(id))
 
 
-  def generateLoad = {
+  def measureLoad = {
+    val client = connect
+    val start = System.currentTimeMillis()
     generatedSamples.foreach(sample =>
       client
         .prepareIndex("samples", "json", sample._1)
         .setSource(sample._2)
         .get()
     )
+    val end = System.currentTimeMillis()
     client.close()
+
+    println(s"Took ${end-start}ms.")
   }
 
-  generateLoad
+  measureLoad
 
 
   private def connect = {
