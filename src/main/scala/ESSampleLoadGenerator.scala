@@ -4,7 +4,7 @@ import org.elasticsearch.common.xcontent.XContentFactory
 /**
   * Created by menzelmi on 09/11/16.
   */
-case class ESSampleLoadGenerator(samples: Int = 100, useHttp: Boolean = false, name: String = null, endpoint: String = null, port: Int = 0) {
+case class ESSampleLoadGenerator(samples: Int = 100, sampleSize: Int = 1024, useHttp: Boolean = false, name: String = null, endpoint: String = null, port: Int = 0) {
 
   private lazy val client =
     if (useHttp) ESClientHTTP(name, endpoint, port)
@@ -35,6 +35,7 @@ case class ESSampleLoadGenerator(samples: Int = 100, useHttp: Boolean = false, n
       .field("id", id)
       .field("name", s"name_is_$id")
       .field("description", s"I am document with id $id.")
+      .field("payload", (1 to sampleSize).map(i => 'o').mkString)
       .endObject()
       .string()
 
