@@ -9,8 +9,9 @@ object ESSampleLoadGeneratorApp extends App {
     head("Elasticsearch Sample Load Generator (eslg)", "1.0")
     opt[Int]('s', "sample-size").optional().action((value, generator) => generator.copy(samples = value))
     opt[String]('n', "cluster-name").required().action((value, generator) => generator.copy(name = value))
-    opt[String]('e', "cluster-endpoint").optional().action((value, generator) => generator.copy(endpoint = value))
-    opt[Int]('p', "cluster-port").optional().action((value, generator) => generator.copy(port = value))
+    opt[String]('e', "cluster-endpoint").required().action((value, generator) => generator.copy(endpoint = value))
+    opt[Int]('p', "cluster-port").required().action((value, generator) => generator.copy(port = value))
+    opt[Boolean]('h', "use-http").optional().action((value, generator) => generator.copy(useHttp = value))
   }.parse(args, ESSampleLoadGenerator()) match {
     case Some(generator) =>
       generator.measureLoad
