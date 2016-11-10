@@ -1,57 +1,43 @@
-import java.net.InetAddress
-
-import org.elasticsearch.client.transport.TransportClient
-import org.elasticsearch.common.settings.Settings
-import org.elasticsearch.common.transport.InetSocketTransportAddress
+import client.{ESClientHTTP, ESClientTCP}
 import org.elasticsearch.common.xcontent.XContentFactory
-import org.elasticsearch.shield.ShieldPlugin
 
 /**
   * Created by menzelmi on 09/11/16.
   */
 object ESSampleLoadGenerator extends App {
 
-  val NUMBER_SAMPLES = 10000
-  val USE_HTTP = false
+  val NUMBER_SAMPLES = 100
+  val USE_HTTP = true
 
-  val CLUSTER_ENDPOINT = "ec2-52-18-128-144.eu-west-1.compute.amazonaws.com"
-  val CLUSTER_PORT = 9300
+  val CLUSTER_ENDPOINT = "search-elasticsearch-l7nmgytxg3mxykmz7ray2b2bbi.eu-west-1.es.amazonaws.com"
+  val CLUSTER_PORT = 80
   val CLUSTER_NAME = "elasticsearch"
 
-
+  val client =
+    if (USE_HTTP) ESClientHTTP(CLUSTER_NAME, CLUSTER_ENDPOINT, CLUSTER_PORT)
+    else ESClientTCP(CLUSTER_NAME, CLUSTER_ENDPOINT, CLUSTER_PORT)
 
   lazy val generatedSamples = (1 to NUMBER_SAMPLES).map(id => id.toString -> generateSampleDocument(id))
 
 
   def measureLoad = {
-    val client = connect
     val start = System.currentTimeMillis()
+    println(s"Starting at $start.")
     generatedSamples.foreach(sample =>
-      client
-        .prepareIndex("samples", "json", sample._1)
-        .setSource(sample._2)
-        .get()
+      putDocument(sample._1, sample._2)
     )
     val end = System.currentTimeMillis()
-    client.close()
+    println(s"Ending at $end.")
 
-    println(s"Took ${end-start}ms.")
+    println(s"Took ${end - start}ms.")
   }
 
   measureLoad
 
 
-  private def connect = {
-    lazy val settings = Settings.settingsBuilder()
-      .put("cluster.name", CLUSTER_NAME)
-      .put("transport.tcp.compress", false)
-      .build()
-    val builder = TransportClient.builder()
-    if (USE_HTTP) builder.addPlugin(classOf[ShieldPlugin])
-    builder.settings(settings).build()
-      .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(CLUSTER_ENDPOINT), CLUSTER_PORT))
+  private def putDocument(id: String, doc: String) = {
+    client.putDocument(id, doc)
   }
-
 
   private def generateSampleDocument(id: Int) =
     XContentFactory.jsonBuilder()
